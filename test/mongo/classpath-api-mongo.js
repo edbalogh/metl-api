@@ -37,7 +37,7 @@ describe('ClassPath API Mongo Tests', () => {
           .catch(next);
       }
     }));
-    mock = server.listen(1306);
+    mock = server.listen(1311);
   });
 
   after(async () => {
