@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "classpath.json",
+  "$ref": "#/definitions/classpath",
+  "definitions": {
+    "classpath": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "version",
+        "link"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
