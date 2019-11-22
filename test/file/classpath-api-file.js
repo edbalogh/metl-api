@@ -48,9 +48,9 @@ describe('ClassPath API File Tests', () => {
       .post(endPoint)
       .expect('Content-Type', /json/)
       .expect(400);
-    const stepResponse = JSON.parse(response.text);
-    expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('message').eq('POST request missing body');
+    const apiResponse = JSON.parse(response.text);
+    expect(apiResponse).to.exist;
+    expect(apiResponse).to.have.property('message').eq('POST request missing body');
     await request(mock).get(endPoint).expect(204);
   });
 
@@ -60,11 +60,11 @@ describe('ClassPath API File Tests', () => {
       .send({ name: 'missing version'})
       .expect('Content-Type', /json/)
       .expect(422);
-    const stepResponse = JSON.parse(response.text);
-    expect(stepResponse).to.exist;
-    expect(stepResponse).to.have.property('errors').lengthOf(2);
-    expect(stepResponse).to.have.property('body');
-    const errors = stepResponse.errors;
+    const apiResponse = JSON.parse(response.text);
+    expect(apiResponse).to.exist;
+    expect(apiResponse).to.have.property('errors').lengthOf(2);
+    expect(apiResponse).to.have.property('body');
+    const errors = apiResponse.errors;
     expect(errors.find(err => err.params.missingProperty === 'version')).to.exist;
     expect(errors.find(err => err.params.missingProperty === 'link')).to.exist;
     await request(mock).get(endPoint).expect(204);
@@ -107,8 +107,8 @@ describe('ClassPath API File Tests', () => {
       .expect(200);
     const resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp).to.have.property('classpath').lengthOf(1);
-    verifyClassPathObject(resp['classpath'][0], returnClassPathObject)
+    expect(resp).to.have.property('classpaths').lengthOf(1);
+    verifyClassPathObject(resp['classpaths'][0], returnClassPathObject)
   });
 
   it('Should update a classpath', async () => {
@@ -172,15 +172,15 @@ describe('ClassPath API File Tests', () => {
       .expect(201);
     let resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp).to.have.property('classpath').lengthOf(data.length);
-    resp.classpath.forEach(po => verifyClassPathObject(po, data.find(p => p.link === po.link)));
+    expect(resp).to.have.property('classpaths').lengthOf(data.length);
+    resp['classpaths'].forEach(po => verifyClassPathObject(po, data.find(p => p.link === po.link)));
     response = await request(mock)
       .get(endPoint)
       .expect('Content-Type', /json/)
       .expect(200);
     resp = JSON.parse(response.text);
     expect(resp).to.exist;
-    expect(resp).to.have.property('classpath').lengthOf(data.length);
+    expect(resp).to.have.property('classpaths').lengthOf(data.length);
   });
 
   function verifyClassPathObject(cpObj, original) {
