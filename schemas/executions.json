@@ -20,7 +20,7 @@
         "executionTypeId": {
           "type": "string"
         },
-        "globalParameters": {
+        "defaultSparkParameters": {
           "type": "array",
           "items": {
             "type": "object",
@@ -41,7 +41,7 @@
             "additionalProperties": false
           }
         },
-        "confParameters": {
+        "defaultConfParameters": {
           "type": "array",
           "items": {
             "type": "object",
