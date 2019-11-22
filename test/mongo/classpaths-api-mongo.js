@@ -4,11 +4,10 @@ const express = require('express');
 const kraken = require('kraken-js');
 const BaseModel = require('../../lib/base.model');
 const expect = require('chai').expect;
-const rmdir = require('rimraf-promise');
+const MongoDb = require('../../lib/mongo');
 const util = require('util');
 
-describe('ClassPath API File Tests', () => {
-  let dataDir;
+describe('ClassPath API Mongo Tests', () => {
   let app;
   let server;
   let mock;
@@ -17,7 +16,7 @@ describe('ClassPath API File Tests', () => {
     version: '1.4.0',
     link: 'https://myhost/jars/common-steps-1.4.0.jar'
   };
-  const endPoint = '/api/v1/classpath';
+  const endPoint = '/api/v1/classpaths';
 
   before((done) => {
     app = express();
@@ -28,18 +27,23 @@ describe('ClassPath API File Tests', () => {
     app.use(kraken({
       basedir: process.cwd(),
       onconfig: (config, next) => {
-        config.set('dataDir', 'testDataClassPath');
-        dataDir = `./${config.get('dataDir') || 'data'}`;
+        config.set('storageType', 'mongodb');
+        config.set('databaseName', 'testDataClassPathsObjects');
         BaseModel.initialStorageParameters(config);
-        next(null, config);
+        MongoDb.init(config)
+          .then(() => {
+            next(null, config);
+          })
+          .catch(next);
       }
     }));
-    mock = server.listen(1310);
+    mock = server.listen(1311);
   });
 
   after(async () => {
     app.removeAllListeners('start');
-    await rmdir(dataDir);
+    await MongoDb.getDatabase().dropDatabase();
+    await MongoDb.disconnect();
     await util.promisify(mock.close.bind(mock))();
   });
 
@@ -72,13 +76,13 @@ describe('ClassPath API File Tests', () => {
 
 
   it('Should not return a classpath', async () => {
-    await request(mock).get('/api/v1/classpath/bad-id').expect(204);
+    await request(mock).get(`${endPoint}/bad-id`).expect(204);
   });
 
   let returnClassPathObject;
   it('Should insert a single classpath', async () => {
     const response = await request(mock)
-      .post('/api/v1/classpath/')
+      .post(endPoint)
       .send(newClassPath)
       .expect('Content-Type', /json/)
       .expect(201);
@@ -91,7 +95,7 @@ describe('ClassPath API File Tests', () => {
 
   it('Should get the inserted classpath', async () => {
     const response = await request(mock)
-      .get(`/api/v1/classpath/${returnClassPathObject.id}`)
+      .get(`${endPoint}/${returnClassPathObject.id}`)
       .expect('Content-Type', /json/)
       .expect(200);
     const resp = JSON.parse(response.text);
@@ -126,18 +130,18 @@ describe('ClassPath API File Tests', () => {
   });
 
   it('Should update a single classpath using post', async () => {
-      returnClassPathObject.version = '2.1.0';
-      const response = await request(mock)
-        .post(endPoint)
-        .send(returnClassPathObject)
-        .expect('Content-Type', /json/)
-        .expect(201);
-      const resp = JSON.parse(response.text);
-      expect(resp).to.exist;
-      expect(resp).to.have.property('classpath');
-      expect(resp.classpath).to.have.property('version').eq('2.1.0');
-      verifyClassPathObject(resp.classpath, returnClassPathObject);
-    });
+    returnClassPathObject.version = '2.1.0';
+    const response = await request(mock)
+      .post(endPoint)
+      .send(returnClassPathObject)
+      .expect('Content-Type', /json/)
+      .expect(201);
+    const resp = JSON.parse(response.text);
+    expect(resp).to.exist;
+    expect(resp).to.have.property('classpath');
+    expect(resp.classpath).to.have.property('version').eq('2.1.0');
+    verifyClassPathObject(resp.classpath, returnClassPathObject);
+  });
 
   it('Should upsert a single classPath', async () => {
     returnClassPathObject.version = '2.2.0';

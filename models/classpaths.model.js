@@ -1,11 +1,11 @@
 const Ajv = require('ajv');
-const schema = require('../schemas/classpath.json');
+const schema = require('../schemas/classpaths.json');
 const BaseModel = require('../lib/base.model');
 
 
-class ClassPathModel extends BaseModel {
+class ClassPathsModel extends BaseModel {
     constructor(){
-        super('classpath', schema);
+        super('classpaths', schema);
     }
 
     // override getValidator to add dependent schemas
@@ -18,4 +18,4 @@ class ClassPathModel extends BaseModel {
     // custom model logic goes here
 }
 
-module.exports = ClassPathModel;
+module.exports = ClassPathsModel;

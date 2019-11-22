@@ -1,4 +1,4 @@
-# ClassPath API
+# ClassPaths API
 
 Parameter                    | DataType | Description
 -----------------------------|----------|------------------------------------------------------------
