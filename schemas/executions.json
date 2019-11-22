@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "executions.json",
+  "$id": "jobs.json",
   "$ref": "#/definitions/executions",
   "definitions": {
     "executions": {
@@ -8,7 +8,10 @@
       "required": [
         "id",
         "name",
-        "executionTypeId"
+        "executionSettingsId",
+        "classPathList",
+        "applicationClass",
+        "applicationJar"
       ],
       "properties": {
         "id": {
@@ -17,10 +20,23 @@
         "name": {
           "type": "string"
         },
-        "executionTypeId": {
+        "executionSettingsId": {
           "type": "string"
         },
-        "defaultSparkParameters": {
+        "classPathList": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minItems": 1
+          }
+        },
+        "applicationClass": {
+          "type": "string"
+        },
+        "applicationJar": {
+          "type": "string"
+        },
+        "sparkParameters": {
           "type": "array",
           "items": {
             "type": "object",
@@ -32,7 +48,7 @@
                 "type": "string"
               },
               "value": {
-                "type": ["string", "boolean", "number"]
+                "type": [ "string", "boolean", "number" ]
               },
               "required": {
                 "type": "boolean"
@@ -41,7 +57,7 @@
             "additionalProperties": false
           }
         },
-        "defaultConfParameters": {
+        "confParameters": {
           "type": "array",
           "items": {
             "type": "object",
@@ -53,13 +69,35 @@
                 "type": "string"
               },
               "value": {
-                "type": ["string", "boolean", "number"]
+                "type": [ "string", "boolean", "number" ]
               },
               "required": {
                 "type": "boolean"
               }
             },
             "additionalProperties": false
+          }
+        },
+        "applicationParameters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "activity": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [ "processId", "status", "description", "sparkUiLink" ],
+            "properties": {
+              "processId": { "type":  "string" },
+              "status": {
+                "type": "string",
+                "enum": [ "PENDING", "COMPLETE", "ERROR", "PROCESSING" ]
+              },
+              "details": { "type": "string" },
+              "sparkUiLink": { "type": "string" }
+            }
           }
         }
       }

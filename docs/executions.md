@@ -4,7 +4,7 @@ Parameter             | DataType | Description
 ----------------------|----------|------------------------------------------------------------
 id                    | Guid     | unique id for this job (generated during creation if not provided)
 name                  | String   | a name to identify the job
-executionId           | String   | id of the execution object that is being used for this job
+executionId           | String   | id of the execution settings object that is being used for this job execution
 classPathList         | Array    | id of classpaths to be included in this job execution
 applicationClass      | String   | scala class that is being executed
 applicationJar        | String   | the jar file that is being used in the submit call for this job
