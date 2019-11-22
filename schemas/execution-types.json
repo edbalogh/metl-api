@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "execution-types.json",
+  "$ref": "#/definitions/execution-types",
+  "definitions": {
+    "execution-types": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "command",
+        "masterUrl",
+        "deployMode"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "masterUrl": {
+          "type": "string"
+        },
+        "deployMode": {
+          "type": "string",
+          "enum": [ "cluster", "client" ]
+        }
+      }
+    }
+  }
+}
