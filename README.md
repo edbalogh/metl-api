@@ -3,12 +3,16 @@ Provides a web interface for managing projects built using the [Spark Pipeline D
 
 A set of APIs are provided that manage the metadata for:
 
-| API             | End Point               | Description                                                                                          |
-|-----------------|-------------------------|------------------------------------------------------------------------------------------------------|
-| Package Objects | /api/v1/package-objects | Manages the JSON schemas that provide the basis for editing complex objects                          |
-| Steps           | /api/v1/steps           | Manages the step metadata used to construct the pipelines. The metadata here drives the Pipelines UI |
-| Pipelines       | /api/v1/pipelines       | Manages the pipeline metadata                                                                        |
-| Applications    | /api/v1/applications    | Manages the application metadata  
+| API                                        | End Point               | Description                                                                                          |
+|--------------------------------------------|-------------------------|------------------------------------------------------------------------------------------------------|
+| Package Objects                            | /api/v1/package-objects | Manages the JSON schemas that provide the basis for editing complex objects                          |
+| Steps                                      | /api/v1/steps           | Manages the step metadata used to construct the pipelines. The metadata here drives the Pipelines UI |
+| Pipelines                                  | /api/v1/pipelines       | Manages the pipeline metadata                                                                        |
+| Applications                               | /api/v1/applications    | Manages the application metadata 
+| [Execution Types](docs/execution-types.md) | /api/v1/execution-types | Manages the execution-types metadata 
+| [Executions](docs/executions.md)           | /api/v1/executions      | Manages the executions metadata 
+| [Jobs](docs/jobs.md)                       | /api/v1/jobs            | Manages the jobs metadata 
+| [ClassPath](docs/classpath.md)             | /api/v1/classpath       | Manages the classpath metadata 
 
 The web interface provides several editors:
 
