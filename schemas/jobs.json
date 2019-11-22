@@ -23,9 +23,6 @@
         "executionId": {
           "type": "string"
         },
-        "applicationName": {
-          "type": "string"
-        },
         "classPathList": {
           "type": "array",
           "items": {
@@ -39,7 +36,7 @@
         "applicationJar": {
           "type": "string"
         },
-        "applicationParameters": {
+        "sparkParameters": {
           "type": "array",
           "items": {
             "type": "object",
@@ -72,13 +69,19 @@
                 "type": "string"
               },
               "value": {
-                "type": ["string", "boolean", "number"]
+                "type": [ "string", "boolean", "number" ]
               },
               "required": {
                 "type": "boolean"
               }
             },
             "additionalProperties": false
+          }
+        },
+        "applicationParameters": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "activity": {
