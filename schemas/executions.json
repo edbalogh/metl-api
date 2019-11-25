@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "jobs.json",
+  "$id": "executions.json",
   "$ref": "#/definitions/executions",
   "definitions": {
     "executions": {
@@ -96,7 +96,9 @@
                 "enum": [ "PENDING", "COMPLETE", "ERROR", "PROCESSING" ]
               },
               "details": { "type": "string" },
-              "sparkUiLink": { "type": "string" }
+              "sparkUiLink": { "type": "string" },
+              "startTime": { "type":  "string" },
+              "endTime": { "type":  "string" }
             }
           }
         }

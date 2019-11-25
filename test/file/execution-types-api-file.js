@@ -93,7 +93,6 @@ describe('ExecutionType API File Tests', () => {
   });
 
   it('Should get the inserted execution-type', async () => {
-    console.log(`returnObject=${JSON.stringify(returnExecutionTypeObject)}`);
     const response = await request(mock)
       .get(`/api/v1/execution-types/${returnExecutionTypeObject.id}`)
       .expect('Content-Type', /json/)
