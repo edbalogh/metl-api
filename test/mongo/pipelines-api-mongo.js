@@ -126,6 +126,8 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should update a pipeline', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     pipeline.name = 'Red on the head fred';
     const response = await request(mock)
       .put(`/api/v1/pipelines/${pipeline.id}`)
@@ -139,6 +141,8 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should delete a pipeline', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     await request(mock).delete(`/api/v1/pipelines/${pipeline.id}`).expect(204);
     await request(mock).get('/api/v1/pipelines').expect(204);
   });
@@ -156,6 +160,8 @@ describe('Pipelines API Mongo Tests', () => {
   });
 
   it('Should update a single pipeline using post', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     pipeline.name = 'Some new name';
     const response = await request(mock)
       .post('/api/v1/pipelines/')
@@ -202,5 +208,11 @@ describe('Pipelines API Mongo Tests', () => {
     expect(pipeline).to.have.property('modifiedDate');
     expect(pipeline).to.have.property('steps').lengthOf(original.steps.length);
     expect(pipeline.steps).to.have.deep.members(original.steps);
+  }
+
+  function sleep(ms){
+    return new Promise(resolve => {
+      setTimeout(resolve,ms)
+    })
   }
 });

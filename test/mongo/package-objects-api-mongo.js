@@ -108,6 +108,8 @@ describe('Package Objects API Mongo Tests', () => {
   });
 
   it('Should update a package-object', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     body.schema = `update:${body.schema}`;
     const response = await request(mock)
       .put(`/api/v1/package-objects/${body.id}`)
@@ -121,6 +123,8 @@ describe('Package Objects API Mongo Tests', () => {
   });
 
   it('Should delete a package-object', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     await request(mock).delete(`/api/v1/package-objects/${body.id}`).expect(204);
     await request(mock).get('/api/v1/package-objects/').expect(204);
   });
@@ -139,6 +143,8 @@ describe('Package Objects API Mongo Tests', () => {
   });
 
   it('Should update a single package-object using post', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     body.schema = `update:${body.schema}`;
     const response = await request(mock)
       .post('/api/v1/package-objects/')
@@ -207,5 +213,11 @@ describe('Package Objects API Mongo Tests', () => {
   function verifyPackageObject(pkgObj, original) {
     expect(pkgObj).to.have.property('id').eq(original.id);
     expect(pkgObj).to.have.property('schema').eq(original.schema);
+  }
+
+  function sleep(ms){
+    return new Promise(resolve => {
+      setTimeout(resolve,ms)
+    })
   }
 });

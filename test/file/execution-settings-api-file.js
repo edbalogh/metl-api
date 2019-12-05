@@ -87,7 +87,6 @@ describe('ExecutionSettings API File Tests', () => {
     expect(apiResponse).to.have.property('errors').lengthOf(1);
     expect(apiResponse).to.have.property('body');
     const errors = apiResponse.errors;
-    console.log(`errors: ${JSON.stringify(errors)}`);
     expect(errors.find(err => err.params.missingProperty === 'executionTypeId')).to.exist;
     await request(mock).get(endPoint).expect(204);
   });
@@ -112,7 +111,6 @@ describe('ExecutionSettings API File Tests', () => {
   });
 
   it('Should get the inserted execution-settings', async () => {
-    console.log(`returnObject=${JSON.stringify(returnExecutionSettingsObject)}`);
     const response = await request(mock)
       .get(`/api/v1/execution-settings/${returnExecutionSettingsObject.id}`)
       .expect('Content-Type', /json/)

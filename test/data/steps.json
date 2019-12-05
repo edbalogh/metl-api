@@ -109,5 +109,18 @@
       "spark": "HDFSSteps.createFileManager",
       "pkg": "com.acxiom.pipeline.steps"
     }
+  },
+  {
+    "id": "b034fe19-60d2-4b8c-a1f1-8048fffbed36",
+    "displayName": "Versioning Tests",
+    "description": "step version 1",
+    "type": "Pipeline",
+    "category": "InputOutput",
+    "params": [],
+    "engineMeta": {
+      "spark": "HDFSSteps.versioning",
+      "pkg": "com.acxiom.pipeline.steps"
+    }
   }
+
 ]

@@ -126,6 +126,8 @@ describe('Applications API File Tests', () => {
   });
 
   it('Should update an application', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     body.name = 'Red on the head fred';
     const response = await request(mock)
       .put(`/api/v1/applications/${body.id}`)
@@ -139,11 +141,15 @@ describe('Applications API File Tests', () => {
   });
 
   it('Should delete an application', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     await request(mock).delete(`/api/v1/applications/${body.id}`).expect(204);
     await request(mock).get('/api/v1/applications').expect(204);
   });
 
   it('Should upsert a single application', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     const response = await request(mock)
       .put(`/api/v1/applications/${body.id}`)
       .send(body)
@@ -156,6 +162,8 @@ describe('Applications API File Tests', () => {
   });
 
   it('Should update a single application using post', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     body.name = 'Some new name';
     const response = await request(mock)
       .post('/api/v1/applications/')
@@ -209,5 +217,11 @@ describe('Applications API File Tests', () => {
     if (original[propertyName]) {
       expect(application).to.have.property(propertyName).deep.equal(original[propertyName]);
     }
+  }
+
+  function sleep(ms){
+    return new Promise(resolve => {
+      setTimeout(resolve,ms)
+    })
   }
 });

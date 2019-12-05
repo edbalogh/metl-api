@@ -66,7 +66,6 @@ describe('ExecutionType API File Tests', () => {
     expect(apiResponse).to.have.property('errors').lengthOf(3);
     expect(apiResponse).to.have.property('body');
     const errors = apiResponse.errors;
-    console.log(`errors: ${JSON.stringify(errors)}`);
     expect(errors.find(err => err.params.missingProperty === 'command')).to.exist;
     expect(errors.find(err => err.params.missingProperty === 'masterUrl')).to.exist;
     expect(errors.find(err => err.params.missingProperty === 'deployMode')).to.exist;

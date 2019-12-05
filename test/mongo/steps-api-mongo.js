@@ -95,6 +95,8 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should delete a step', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     await request(mock).delete(`/api/v1/steps/${body.id}`).expect(204);
     await request(mock).get('/api/v1/steps').expect(204);
   });
@@ -113,6 +115,8 @@ describe('Steps API Mongo Tests', () => {
   });
 
   it('Should update a single step using post', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     const response = await request(mock)
       .post('/api/v1/steps/')
       .send(body)
@@ -146,6 +150,74 @@ describe('Steps API Mongo Tests', () => {
     expect(stepResponse).to.have.property('steps').lengthOf(4);
   });
 
+  it('Should get previous versions', async () => {
+    const baseStep = JSON.parse(JSON.stringify(stepData.find(step => step.id === 'b034fe19-60d2-4b8c-a1f1-8048fffbed36')));
+    baseStep.description = 'step version 1';
+
+    // setup the post and 2 updates
+    await request(mock)
+      .post('/api/v1/steps/')
+      .send(baseStep)
+      .expect('Content-Type', /json/)
+      .expect(201);
+
+    baseStep.description = 'step version 2';
+    await request(mock)
+      .put(`/api/v1/steps/${baseStep.id}`)
+      .send(baseStep)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    baseStep.description = 'step version 3';
+    await request(mock)
+      .put(`/api/v1/steps/${baseStep.id}`)
+      .send(baseStep)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    // no versionsAgo specified should return the last update (version 3)
+    const activeResponse = await request(mock)
+      .get(`/api/v1/steps/${baseStep.id}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    const active = JSON.parse(activeResponse.text).step;
+    expect(active).to.have.property('description').eq('step version 3');
+
+    // versionsAgo 0 should also return active version (version 3)
+    const activeResponse0 = await request(mock)
+      .get(`/api/v1/steps/${baseStep.id}?versionsAgo=0`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    const active0 = JSON.parse(activeResponse0.text).step;
+    expect(active0).to.have.property('description').eq('step version 3');
+
+    // one version ago should return 1st update (version 2)
+    const versionAgo1Response = await request(mock)
+      .get(`/api/v1/steps/${baseStep.id}?versionsAgo=1`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    const versionsAgo1 = JSON.parse(versionAgo1Response.text).step;
+    expect(versionsAgo1).to.have.property('description').eq('step version 2');
+
+    // 2 versions ago should return original (version 1)
+    const versionAgo2Response = await request(mock)
+      .get(`/api/v1/steps/${baseStep.id}?versionsAgo=2`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    const versionsAgo2 = JSON.parse(versionAgo2Response.text).step;
+    expect(versionsAgo2).to.have.property('description').eq('step version 1');
+
+    // requesting past earliest version should return empty results
+    await request(mock)
+      .get(`/api/v1/steps/${baseStep.id}?versionsAgo=9`)
+      .expect(204);
+
+  });
+
   function verifyStep(step, original) {
     expect(step).to.have.property('id').equal(original.id);
     expect(step).to.have.property('displayName').equal(original.displayName);
@@ -155,5 +227,11 @@ describe('Steps API Mongo Tests', () => {
     expect(step).to.have.nested.property('engineMeta.spark').equal(original.engineMeta.spark);
     expect(step).to.have.property('params').lengthOf(original.params.length);
     expect(step.params).to.have.deep.members(original.params);
+  }
+
+  function sleep(ms){
+    return new Promise(resolve => {
+      setTimeout(resolve,ms)
+    })
   }
 });

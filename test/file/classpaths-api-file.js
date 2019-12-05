@@ -86,6 +86,7 @@ describe('ClassPath API File Tests', () => {
     expect(resp).to.exist;
     expect(resp).to.have.property('classpath');
     returnClassPathObject = resp.classpath;
+    delete returnClassPathObject._id;
     verifyClassPathObject(resp['classpath'], newClassPath);
   });
 
@@ -112,6 +113,8 @@ describe('ClassPath API File Tests', () => {
   });
 
   it('Should update a classpath', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     returnClassPathObject.version = `2.0.0`;
     const response = await request(mock)
       .put(`${endPoint}/${returnClassPathObject.id}`)
@@ -126,6 +129,8 @@ describe('ClassPath API File Tests', () => {
   });
 
   it('Should update a single classpath using post', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
       returnClassPathObject.version = '2.1.0';
       const response = await request(mock)
         .post(endPoint)
@@ -140,6 +145,8 @@ describe('ClassPath API File Tests', () => {
     });
 
   it('Should upsert a single classPath', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     returnClassPathObject.version = '2.2.0';
     const response = await request(mock)
       .put(`${endPoint}/${returnClassPathObject.id}`)
@@ -154,6 +161,8 @@ describe('ClassPath API File Tests', () => {
   });
 
   it('Should delete a classpath', async () => {
+    // sleep to make sure archiveDate timestamp is unique
+    await sleep(10);
     await request(mock).delete(`${endPoint}/${returnClassPathObject.id}`).expect(204);
     await request(mock).get(endPoint).expect(204);
   });
@@ -191,5 +200,11 @@ describe('ClassPath API File Tests', () => {
     expect(cpObj).to.have.property('name').eq(original.name);
     expect(cpObj).to.have.property('version').eq(original.version);
     expect(cpObj).to.have.property('link').eq(original.link);
+  }
+
+  function sleep(ms){
+    return new Promise(resolve => {
+      setTimeout(resolve,ms)
+    })
   }
 });
