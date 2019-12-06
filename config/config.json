@@ -1,5 +1,27 @@
 {
   "storageType": "file",
+  "executionTypes": [
+    {
+      "name": "Local Spark",
+      "id": "local-spark-execution",
+      "path": "./lib/execution-types/local-spark-execution"
+    },
+    {
+      "name": "External Spark",
+      "id": "external-spark-execution",
+      "path": "./lib/execution-types/external-spark-execution"
+    },
+    {
+      "name": "Kubernetes Spark",
+      "id": "k8s-spark-execution",
+      "path": "./lib/execution-types/k8s-spark-execution"
+    },
+    {
+      "name": "Qubole Spark",
+      "id": "qubole-spark-execution",
+      "path": "./lib/execution-types/qubole-spark-execution"
+    }
+  ],
   "middleware": {
     "json": {
       "enabled": true,

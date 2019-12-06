@@ -7,7 +7,7 @@
       "type": "object",
       "required": [
         "id",
-        "name",
+        "applicationName",
         "executionSettingsId",
         "classPathList",
         "applicationClass",
@@ -21,9 +21,13 @@
           "type": "string"
         },
         "executionSettingsId": {
+          "title": "execution settings id",
+          "description": "id of the execution-settings object to use for the spark execution",
           "type": "string"
         },
         "classPathList": {
+          "title": "classpath list",
+          "description": "ids for the classpath objects that are to be passed as jars to the spark submit (--jars)",
           "type": "array",
           "items": {
             "type": "string",
@@ -31,17 +35,23 @@
           }
         },
         "applicationClass": {
+          "title": "application class",
+          "description": "class from the application jar that is to be executed in the spark submit",
           "type": "string"
         },
         "applicationJar": {
+          "title": "application jar",
+          "description": "application jar for the spark submit command",
           "type": "string"
         },
         "sparkParameters": {
+          "title": "spark submit parameters",
+          "description": "spark submit specific parameters and optional values to use when executing this spark job",
           "type": "array",
           "items": {
             "type": "object",
             "required": [
-              "parameter", "value", "required"
+              "parameter", "value"
             ],
             "properties": {
               "parameter": {
@@ -49,20 +59,19 @@
               },
               "value": {
                 "type": [ "string", "boolean", "number" ]
-              },
-              "required": {
-                "type": "boolean"
               }
             },
             "additionalProperties": false
           }
         },
         "confParameters": {
+          "title": "spark conf parameters",
+          "description": "spark conf parameters (--conf) and optional values to use when executing this spark job",
           "type": "array",
           "items": {
             "type": "object",
             "required": [
-              "parameter", "value", "required"
+              "parameter"
             ],
             "properties": {
               "parameter": {
@@ -70,35 +79,58 @@
               },
               "value": {
                 "type": [ "string", "boolean", "number" ]
-              },
-              "required": {
-                "type": "boolean"
               }
             },
             "additionalProperties": false
           }
         },
         "applicationParameters": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "activity": {
+          "title": "application parameters",
+          "description": "application specific parameters and optional values to use when executing this spark job",
           "type": "array",
           "items": {
             "type": "object",
-            "required": [ "processId", "status", "description", "sparkUiLink" ],
+            "required": [
+              "parameter"
+            ],
             "properties": {
-              "processId": { "type":  "string" },
-              "status": {
-                "type": "string",
-                "enum": [ "PENDING", "COMPLETE", "ERROR", "PROCESSING" ]
+              "parameter": {
+                "type": "string"
               },
-              "details": { "type": "string" },
+              "value": {
+                "type": [ "string", "boolean", "number" ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "instances": {
+          "title": "execution instances",
+          "description": "execution instances for this execution object",
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "executionSettings": {
+          "title": "execution type details",
+          "description": "parameters required for the specific execution-type that is being used for this execution (parameters vary based on type)",
+          "type": "object",
+          "required": [ "executionType" ],
+          "properties": {
+            "executionType": { "type": "string" }
+          }
+        },
+        "executionInstances": {
+          "title": "execution instance list",
+          "description": "execution instances for this execution object",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "applicationId": { "type": "string" },
               "sparkUiLink": { "type": "string" },
-              "startTime": { "type":  "string" },
-              "endTime": { "type":  "string" }
+              "applicationAudit": { "type": "object" }
             }
           }
         }
