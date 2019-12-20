@@ -1,10 +1,12 @@
 class ExecutionTypesModel {
   constructor(executionTypes){
+    console.log(`executionTypes during constructor: ${executionTypes}`);
     this.executionTypes = executionTypes;
   }
 
   getById(id) {
     let results = [];
+    console.log(`types: ${this.executionTypes}`);
     this.executionTypes.forEach((t) => {
       if(t.id === id) results.push(t);
     });
@@ -16,21 +18,33 @@ class ExecutionTypesModel {
     }
   }
 
-  getParameters(id) {
+  // return the execution class
+  getExecutionClass(id) {
     const details = this.getById(id);
     const ExecutionType = require(details.path);
-    return new ExecutionType().getParameters();
+    return new ExecutionType();
   }
 
-  // override getValidator to add dependent schemas
-  getValidator(schema) {
-      const ajv = new Ajv({ allErrors: true, extendRefs: true });
-      return ajv.compile(schema);
+  // called from UI to get the json schema representing parameters to build settings for a type
+  getParameters(id) {
+    this.getExecutionClass(id).getParameters();
   }
 
+  // called from execution-settings endpoint to validate settings before insert or update
+  validateSettings(id, settings) {
+    this.getExecutionClass(id).validateSettings(settings);
+  }
 
+  // called from execution endpoint to generation a build command (but not run it)
+  buildCommand(execution) {
+    this.getExecutionClass(execution.executionTypeId).buildCommand(execution);
+  }
 
-  // custom model logic goes here
+  // called from execution endpoint to run the command
+  execute(execution) {
+    this.getExecutionClass(execution.executionTypeId).execute(execution);
+  }
+
 }
 
 module.exports = ExecutionTypesModel;
