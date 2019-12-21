@@ -8,21 +8,23 @@ module.exports = function (router) {
   baseRoutes.buildGetAllRoute(router);
   baseRoutes.buildDeleteRoute(router);
 
+  const model = new ExecutionSettingsModel();
+
   router.post('/', async (req, res) => {
     if (req.body && Array.isArray(req.body)) {
-      const results = await this.model.createMany(req.body, req.app.kraken.get('executionTypes'));
+      const results = await model.createMany(req.body, req.app.kraken.get('executionTypes'));
       if (results.errorList.length === 0) {
         const returnObj = {};
-        returnObj[this.pluralName] = results.successList;
+        returnObj['execution-settings'] = results.successList;
         res.status(201).json(returnObj);
       } else {
         res.status(422).json({errors: results.errorList, successes: results.successList});
       }
     } else if(req.body && Object.keys(req.body).length > 0) {
       try {
-        const record = await this.model.createOne(req.body, req.app.kraken.get('executionTypes'));
+        const record = await model.createOne(req.body, req.app.kraken.get('executionTypes'));
         const returnObj = {};
-        returnObj[this.singleName] = record;
+        returnObj['execution-settings'] = record;
         res.status(201).json(returnObj);
       } catch(err) {
         res.status(422).json({ errors: err.getValidationErrors(), body: req.body });
@@ -34,9 +36,9 @@ module.exports = function (router) {
 
   router.put('/:id', async (req, res) => {
     try {
-      const record = await this.model.update(req.params.id, req.body, req.app.kraken.get('executionTypes'));
+      const record = await model.update(req.params.id, req.body, req.app.kraken.get('executionTypes'));
       const returnObj = {};
-      returnObj[this.singleName] = record;
+      returnObj['execution-settings'] = record;
       res.json(returnObj);
     } catch(err) {
       res.status(500).json({ errors: err.message, body: req.body });

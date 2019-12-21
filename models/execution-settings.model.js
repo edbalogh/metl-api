@@ -1,23 +1,22 @@
-const schema = require('../schemas/execution-settings.json');
 const BaseModel = require('../lib/base.model');
 const uuid = require('uuid/v1');
-const ValidationError = require('../lib/ValidationError');
 const ExecutionTypesModel = require('../models/execution-types.model');
 
 
 class ExecutionSettingsModel extends BaseModel {
   constructor(){
-      super('execution-settings', schema);
+      super('execution-settings', null);
   }
 
   // override getValidator to add dependent schemas
-  getValidatorWithType(schema, executionTypes) {
-    console.log(`executionTypes in settings.getValidator: ${executionTypes}`);
-    const execType = new ExecutionTypesModel(executionTypes).getById(schema.executionTypeId);
-    if(!execType) {
-      throw new ValidationError(`no execution-type found in config for id ${schema.executionTypeId}`);
-    }
-    return execType.validateSettings(schema);
+  validate(schema, executionTypes) {
+    const executionType = new ExecutionTypesModel(executionTypes).getExecutionClass(schema.executionTypeId);
+    return executionType.validateSettings(schema);
+    // return executionType.validator;
+  }
+
+  getValidator(schema) {
+    return true;
   }
 
   async createOne(record, executionTypes) {
@@ -27,8 +26,7 @@ class ExecutionSettingsModel extends BaseModel {
     }
 
     // validate record
-    const validation = await this.getValidatorWithType(record, executionTypes);
-    console.log(`validation complete: ${JSON.stringify(validation)}`);
+    const validation = await this.validate(record, executionTypes);
     if (validation) {
       return await this.storageModel.addRecord({id: record.id}, record);
     }
@@ -51,7 +49,7 @@ class ExecutionSettingsModel extends BaseModel {
   }
 
   async update(id, record, executionTypes) {
-    const validation = await this.getValidatorWithType(record, executionTypes);
+    const validation = await this.validate(record, executionTypes);
     if (!validation) {
       throw Error(this.validation.errors.join(','));
     } else if (id !== record.id) {

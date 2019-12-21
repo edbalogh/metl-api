@@ -19,6 +19,10 @@ describe('ExecutionSettings API File Tests', () => {
     numberCores: 4,
     deployMode: 'cluster'
   };
+  const executionTypes = [
+    { name: 'local', id: 'local-spark-execution', path: '../lib/execution-types/local-spark-execution' },
+    { name: 'kubernetes', id: 'k8s-spark-execution', path: '../lib/execution-types/k8s-spark-execution' }
+  ];
   const endPoint = '/api/v1/execution-settings';
 
   before((done) => {
@@ -31,6 +35,7 @@ describe('ExecutionSettings API File Tests', () => {
       basedir: process.cwd(),
       onconfig: (config, next) => {
         config.set('dataDir', 'testDataExecutionSettings');
+        config.set('executionTypes', executionTypes);
         dataDir = `./${config.get('dataDir') || 'data'}`;
         BaseModel.initialStorageParameters(config);
         next(null, config);
@@ -59,7 +64,7 @@ describe('ExecutionSettings API File Tests', () => {
   it('Should fail validation on insert', async () => {
     const response = await request(mock)
       .post(endPoint)
-      .send({ name: 'missing executorTypeId'})
+      .send({ name: 'missing executorTypeId', 'executionTypeId': 'local-spark-execution' })
       .expect('Content-Type', /json/)
       .expect(422);
     const apiResponse = JSON.parse(response.text);
@@ -67,28 +72,28 @@ describe('ExecutionSettings API File Tests', () => {
     expect(apiResponse).to.have.property('errors').lengthOf(1);
     expect(apiResponse).to.have.property('body');
     const errors = apiResponse.errors;
-    expect(errors.find(err => err.params.missingProperty === 'executionTypeId')).to.exist;
+    expect(errors.find(err => err.params.missingProperty === 'sparkSubmitPath')).to.exist;
     await request(mock).get(endPoint).expect(204);
   });
 
-  //
-  // it('Should not return a execution-settings', async () => {
-  //   await request(mock).get(`${endPoint}/bad-id`).expect(204);
-  // });
-  //
-  // let returnExecutionSettingsObject;
-  // it('Should insert a single execution-settings', async () => {
-  //   const response = await request(mock)
-  //     .post(endPoint)
-  //     .send(newSettings)
-  //     .expect('Content-Type', /json/)
-  //     .expect(201);
-  //   const resp = JSON.parse(response.text);
-  //   expect(resp).to.exist;
-  //   expect(resp).to.have.property('execution-settings');
-  //   returnExecutionSettingsObject = resp['execution-settings'];
-  //   verifyReturnObject(resp['execution-settings'], newSettings);
-  // });
+
+  it('Should not return a execution-settings', async () => {
+    await request(mock).get(`${endPoint}/bad-id`).expect(204);
+  });
+
+  let returnExecutionSettingsObject;
+  it('Should insert a single execution-settings', async () => {
+    const response = await request(mock)
+      .post(endPoint)
+      .send(newSettings)
+      .expect('Content-Type', /json/)
+      .expect(201);
+    const resp = JSON.parse(response.text);
+    expect(resp).to.exist;
+    expect(resp).to.have.property('execution-settings');
+    returnExecutionSettingsObject = resp['execution-settings'];
+    verifyReturnObject(resp['execution-settings'], newSettings);
+  });
   //
   // it('Should get the inserted execution-settings', async () => {
   //   const response = await request(mock)
@@ -184,18 +189,18 @@ describe('ExecutionSettings API File Tests', () => {
   //   expect(resp).to.have.property('execution-settings').lengthOf(data.length);
   // });
   //
-  // function verifyReturnObject(inObj, original) {
-  //   expect(inObj).to.have.property('id');
-  //   if(original.hasOwnProperty('id')) {
-  //     expect(inObj).to.have.property('id').eq(original.id);
-  //   }
-  //   expect(inObj).to.have.property('name').eq(original.name);
-  //   expect(inObj).to.have.property('executionTypeId').eq(original.executionTypeId);
-  //   if(original.hasOwnProperty('numberCores')) {
-  //      expect(inObj).to.have.property('numberCores').eql(original.numberCores);
-  //   }
-  //   if(original.hasOwnProperty('deployMode')) {
-  //     expect(inObj).to.have.property('deployMode').eql(original.deployMode);
-  //   }
-  // }
+  function verifyReturnObject(inObj, original) {
+    expect(inObj).to.have.property('id');
+    if(original.hasOwnProperty('id')) {
+      expect(inObj).to.have.property('id').eq(original.id);
+    }
+    expect(inObj).to.have.property('name').eq(original.name);
+    expect(inObj).to.have.property('executionTypeId').eq(original.executionTypeId);
+    if(original.hasOwnProperty('numberCores')) {
+       expect(inObj).to.have.property('numberCores').eql(original.numberCores);
+    }
+    if(original.hasOwnProperty('deployMode')) {
+      expect(inObj).to.have.property('deployMode').eql(original.deployMode);
+    }
+  }
 });

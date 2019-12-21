@@ -1,18 +1,18 @@
 class ExecutionTypesModel {
   constructor(executionTypes){
-    console.log(`executionTypes during constructor: ${executionTypes}`);
     this.executionTypes = executionTypes;
   }
 
   getById(id) {
     let results = [];
-    console.log(`types: ${this.executionTypes}`);
     this.executionTypes.forEach((t) => {
       if(t.id === id) results.push(t);
     });
 
     if(results.length > 1) {
       throw new Error('multiple execution types found with id')
+    } else if(results.length === 0) {
+      throw new Error(`no execution-type found in config with id ${id}`);
     } else {
       return results[0];
     }
