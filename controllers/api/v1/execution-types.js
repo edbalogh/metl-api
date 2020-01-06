@@ -36,10 +36,4 @@ module.exports = function async (router) {
       res.status(501).send({ error: e });
     }
   });
-
-  // req.app.kraken.get(req.param.id) to get the config1
-  // POST executions/:id/command (execution is provided in body; returns command)
-  // POST executions/:id/execute (execution is provided in body; runs command)
-
-  // custom routes go here
 };
