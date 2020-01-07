@@ -1,6 +1,7 @@
 const BaseModel = require('../lib/base.model');
 const uuid = require('uuid/v1');
 const ExecutionTypesModel = require('../models/execution-types.model');
+const ValidationError = require('../lib/ValidationError');
 
 
 class ExecutionSettingsModel extends BaseModel {
@@ -10,12 +11,15 @@ class ExecutionSettingsModel extends BaseModel {
 
   // override getValidator to add dependent schemas
   validate(schema, executionTypes) {
+    if(!schema.hasOwnProperty('executionTypeId')) {
+      throw new ValidationError('', [{ keyword: 'required', params: { missingProperty: 'executionTypeId'}, message: 'should have required property \'executionTypeId\''}] );
+    }
     const executionType = new ExecutionTypesModel(executionTypes).getExecutionClass(schema.executionTypeId);
     return executionType.validateSettings(schema);
-    // return executionType.validator;
   }
 
   getValidator(schema) {
+    // this will not be used for execution settings since the schema to validate against is stored in the types
     return true;
   }
 

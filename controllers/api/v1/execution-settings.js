@@ -27,7 +27,7 @@ module.exports = function (router) {
         returnObj['execution-settings'] = record;
         res.status(201).json(returnObj);
       } catch(err) {
-        res.status(422).json({ errors: err.getValidationErrors(), body: req.body });
+        res.status(422).json({ errors: err.message || err.getValidationErrors(), body: req.body });
       }
     } else {
       res.status(400).send({message: 'POST request missing body'});
