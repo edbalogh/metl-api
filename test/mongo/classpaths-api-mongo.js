@@ -125,7 +125,6 @@ describe('ClassPath API Mongo Tests', () => {
       .send(returnClassPathObject)
       .expect('Content-Type', /json/)
       .expect(200);
-    console.log(`response: ${JSON.stringify(response)}`);
     const resp = JSON.parse(response.text);
     expect(resp).to.exist;
     expect(resp).to.have.property('classpath');

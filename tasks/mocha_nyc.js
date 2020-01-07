@@ -3,7 +3,7 @@ module.exports = function nyc(grunt) {
   grunt.loadNpmTasks('grunt-mocha-nyc');
   return {
     file: {
-      src: ['test/file/**/execution-settings*.js'],
+      src: ['test/file/**/*.js'],
       options: {
         timeout: 30000,
         'check-leaks': true,

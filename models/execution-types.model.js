@@ -30,10 +30,10 @@ class ExecutionTypesModel {
     this.getExecutionClass(id).getParameters();
   }
 
-  // called from execution-settings endpoint to validate settings before insert or update
-  validateSettings(id, settings) {
-    this.getExecutionClass(id).validateSettings(settings);
-  }
+  // // called from execution-settings endpoint to validate settings before insert or update
+  // validateSettings(id, settings) {
+  //   this.getExecutionClass(id).validateSettings(settings);
+  // }
 
   // called from execution endpoint to generation a build command (but not run it)
   buildCommand(execution) {

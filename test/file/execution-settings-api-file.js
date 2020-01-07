@@ -68,7 +68,6 @@ describe('ExecutionSettings API File Tests', () => {
       .expect('Content-Type', /json/)
       .expect(422);
     const apiResponse = JSON.parse(response.text);
-    console.log(JSON.stringify(response.text));
     expect(apiResponse).to.exist;
     expect(apiResponse).to.have.property('errors').lengthOf(1);
     expect(apiResponse).to.have.property('body');
@@ -85,7 +84,6 @@ describe('ExecutionSettings API File Tests', () => {
       .expect(422);
     const apiResponse = JSON.parse(response.text);
     expect(apiResponse).to.exist;
-    console.log(JSON.stringify(response.text));
     expect(apiResponse).to.have.property('errors').lengthOf(1);
     expect(apiResponse).to.have.property('body');
     const errors = apiResponse.errors;
@@ -149,18 +147,18 @@ describe('ExecutionSettings API File Tests', () => {
   });
 
   it('Should update a single execution-settings using post', async () => {
-      returnExecutionSettingsObject.numberCores = 2;
-      const response = await request(mock)
-        .post(endPoint)
-        .send(returnExecutionSettingsObject)
-        .expect('Content-Type', /json/)
-        .expect(201);
-      const resp = JSON.parse(response.text);
-      expect(resp).to.exist;
-      expect(resp).to.have.property('execution-settings');
-      expect(resp['execution-settings']).to.have.property('numberCores').eq(2);
+    returnExecutionSettingsObject.numberCores = 2;
+    const response = await request(mock)
+      .post(endPoint)
+      .send(returnExecutionSettingsObject)
+      .expect('Content-Type', /json/)
+      .expect(201);
+    const resp = JSON.parse(response.text);
+    expect(resp).to.exist;
+    expect(resp).to.have.property('execution-settings');
+    expect(resp['execution-settings']).to.have.property('numberCores').eq(2);
     verifyReturnObject(resp['execution-settings'], returnExecutionSettingsObject);
-    });
+  });
 
   it('Should upsert a single execution-settings', async () => {
     returnExecutionSettingsObject.numberCores = 3;
