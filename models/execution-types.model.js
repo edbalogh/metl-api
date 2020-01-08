@@ -12,7 +12,7 @@ class ExecutionTypesModel {
     if(results.length > 1) {
       throw new Error('multiple execution types found with id')
     } else if(results.length === 0) {
-      throw new Error(`no execution-type found in config with id ${id}`);
+      return null;
     } else {
       return results[0];
     }
@@ -27,7 +27,7 @@ class ExecutionTypesModel {
 
   // called from UI to get the json schema representing parameters to build settings for a type
   getParameters(id) {
-    this.getExecutionClass(id).getParameters();
+    return this.getExecutionClass(id).getParameters();
   }
 
   // // called from execution-settings endpoint to validate settings before insert or update
