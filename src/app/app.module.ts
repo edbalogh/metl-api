@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { CoreModule } from './core/core.module';
+import {MatIconRegistry} from '@angular/material/icon';
 import { SharedModule } from './shared/shared.module';
 import {
   MAT_DIALOG_DEFAULT_OPTIONS,
@@ -21,7 +22,6 @@ import { PipelinesModule } from './pipelines/pipelines.module';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-
     CoreModule,
     SharedModule,
     ApplicationsModule,
