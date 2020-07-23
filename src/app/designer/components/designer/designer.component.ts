@@ -45,8 +45,8 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
   jsPlumbInstance;
 
   // TODO see if there is an angular way to handle this
-  viewReady: boolean = false;
-  modelPopulating: boolean = false;
+  viewReady = false;
+  modelPopulating = false;
 
   htmlNodeLookup:object = {};
 
@@ -102,21 +102,12 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
   }
 
   removeElement(data: DesignerElement, componentRef) {
-    let key = Object.keys(this.model.nodes).find(key => this.model.nodes[key].data.name === data.name);
+    const key = Object.keys(this.model.nodes).find(k => this.model.nodes[k].data.name === data.name);
     this.jsPlumbInstance.remove(key);
     delete this.model.nodes[key];
     delete this.htmlNodeLookup[key];
     this.designerCanvas.viewContainerRef.remove(this.designerCanvas.viewContainerRef.indexOf(componentRef));
     this.broadCastModelChanges();
-  }
-
-  static newModel() {
-    return {
-      nodeSeq: 1,
-      nodes: {},
-      endpoints: {},
-      connections: {}
-    };
   }
 
   /**
@@ -133,7 +124,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
    * @param data The data used to add the element to the designer. This will be added to the model.
    */
   addDesignerElement(data: DesignerElement) {
-    let nodeId = `designer-node-${this.model.nodeSeq++}`;
+    const nodeId = `designer-node-${this.model.nodeSeq++}`;
     const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
     // Register the data with the model
     const x = data.event ? data.event.event.x : data.layout.x;
@@ -149,16 +140,16 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
   populateFromModel() {
     this.modelPopulating = true;
     // Iterate the nodes in the model
-    for(let key of Object.keys(this.model.nodes)) {
+    for(const key of Object.keys(this.model.nodes)) {
       this.addNModelNode(key, this.model.nodes[key]);
     }
     // Add connections from model
     let connection;
     const endpointEntries = Object.entries(this.model.endpoints);
-    for (let key of Object.keys(this.model.connections)) {
+    for (const key of Object.keys(this.model.connections)) {
       connection = this.model.connections[key];
       // Only create a connection if both nodeIds are populated
-      if (connection.sourceNodeId && connection.targetNodeId){
+      if (connection.sourceNodeId && connection.targetNodeId) {
         connection.endpoints.forEach(ep => {
           this.jsPlumbInstance.connect({
             source:  this.jsPlumbInstance.getEndpoints(connection.sourceNodeId).find(e =>
@@ -172,6 +163,15 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       }
     }
     this.modelPopulating = false;
+  }
+
+  static newModel() {
+    return {
+      nodeSeq: 1,
+      nodes: {},
+      endpoints: {},
+      connections: {}
+    };
   }
 
   private initializeDesigner() {
@@ -252,7 +252,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     }
     // Add the output connectors
     if (data.outputs && data.outputs.length > 0) {
-      let rotations = [];
+      const rotations = [];
       if (data.outputs.length === 1 || data.outputs.length % 2 !== 0) {
         rotations.push(0);
       }
@@ -297,7 +297,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     componentRef.instance.id = nodeId;
     componentRef.location.nativeElement.className = data.style;
     // Handle selection events
-    this.elementSubscriptions.push(componentRef.instance.nodeSelected.subscribe(data => {
+    this.elementSubscriptions.push(componentRef.instance.nodeSelected.subscribe(() => {
       if (this.selectedComponent) {
         this.selectedComponent.location.nativeElement.className = this.selectedComponent.location.nativeElement.className.replace('designer-node-selected', '');
       }
@@ -305,8 +305,8 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       this.selectedComponent = componentRef;
       this.elementSelected.emit(data)
     }));
-    this.elementSubscriptions.push(componentRef.instance.nodeAction.subscribe(data => this.elementAction.emit(data)));
-    this.elementSubscriptions.push(componentRef.instance.nodeRemoved.subscribe(data => this.removeElement(data, componentRef)));
+    this.elementSubscriptions.push(componentRef.instance.nodeAction.subscribe(d => this.elementAction.emit(d)));
+    this.elementSubscriptions.push(componentRef.instance.nodeRemoved.subscribe(d => this.removeElement(d, componentRef)));
     // Get the div element of the new node
     const node = componentRef.location.nativeElement;
     node.setAttribute('id', nodeId);
@@ -346,7 +346,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
     Object.keys(model.connections).forEach(conn => {
       edge = model.connections[conn];
       graph.setEdge(edge.sourceNodeId, edge.targetNodeId);
-    })
+    });
     // Perform layout
     layout(graph);
     // Update the model nodes
@@ -361,7 +361,7 @@ export class DesignerComponent implements AfterViewInit, OnDestroy {
       // if there are nodes defined, then process additional center offset
       if(graph.nodes().length > 0) {
         // Get the first node from the graph and get its internal offset, use that as the center point
-        const n = graph.nodes()[0]
+        const n = graph.nodes()[0];
         node = model.nodes[n];
         gnode = graph.node(n);
         center = gnode.x + 32; // +32 to meet the midpoint of the node

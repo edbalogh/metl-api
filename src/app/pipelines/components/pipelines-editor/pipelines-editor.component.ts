@@ -56,12 +56,12 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   pipelineValidator;
   stepGroup: StepGroupProperty = { enabled: false };
   user: User;
-  editName: boolean = false;
-  editStepId: boolean = false;
+  editName = false;
+  editStepId = false;
   errors = [];
   subscriptions: Subscription[] = [];
-  private stepsLoading: boolean = false;
-  private pipelinesLoading: boolean = false;
+  private stepsLoading = false;
+  private pipelinesLoading = false;
 
   constructor(
     private stepsService: StepsService,
@@ -73,7 +73,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.authService.userItemSelection.subscribe(data => {
       const newPipeline = this.generatePipeline();
       // Cannot diff the pipeline since step orders could have changed
-    if (data.defaultProjectId != this.user.defaultProjectId) {
+    if (data.defaultProjectId !== this.user.defaultProjectId) {
       if (this.hasPipelineChanged(newPipeline)) {
         const dialogRef = this.dialog.open(ConfirmationModalComponent, {
           width: '450px',
@@ -221,7 +221,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   @Input()
   set step(step: PipelineStep) {
     if (step) {
-      let localStep = this.selectedPipeline.steps.find((s) => s.id === step.id);
+      const localStep = this.selectedPipeline.steps.find((s) => s.id === step.id);
       if (localStep) {
         this.selectedStep = localStep;
       } else {
@@ -542,7 +542,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   }
 
   private createDesignerElement(step: PipelineStep, event) {
-    let actions = [{
+    const actions = [{
       displayName: 'Refresh Step',
       action: 'refreshStep',
       enableFunction: () => {
@@ -589,7 +589,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
 
   private configureStepGroup() {
     if (this.selectedStep.type === 'step-group') {
-      let pipeline = this.getPipeline(this.selectedStep);
+      const pipeline = this.getPipeline(this.selectedStep);
       this.stepGroup = {
         enabled: true,
         pipeline: pipeline,
@@ -644,7 +644,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   }
 
   private generateOutputs(step: PipelineStep) {
-    let outputs = [];
+    const outputs = [];
     if (step.type.toLocaleLowerCase() === 'branch') {
       step.params.forEach((p) => {
         if (p.type.toLocaleLowerCase() === 'result') {
@@ -656,6 +656,10 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     }
     outputs.push(PipelinesEditorComponent.generateErrorOutput());
     return outputs;
+  }
+
+  get hasChanges() {
+    return this.hasPipelineChanged(this.selectedPipeline);
   }
 
   private static generateErrorOutput() {
@@ -679,9 +683,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         }),
       );
   }
-  get hasChanges() {
-    return this.hasPipelineChanged(this.selectedPipeline);
-  }
+
   private hasPipelineChanged(newPipeline) {
     let changed = this._pipeline.steps.length !== newPipeline.steps.length;
     let originalStep;
@@ -717,7 +719,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
     const model = DesignerComponent.newModel();
     let nodeId;
     this.stepLookup = {};
-    const existingLayout = pipeline.layout && Object.keys(pipeline.layout).length > 0
+    const existingLayout = pipeline.layout && Object.keys(pipeline.layout).length > 0;
     pipeline.steps.forEach((step) => {
       nodeId = `designer-node-${model.nodeSeq++}`;
       model.nodes[nodeId] = {
@@ -867,7 +869,7 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
   }
 
   private validatePipelineSteps(pipeline: Pipeline): string[] {
-    let errors = [];
+    const errors = [];
 
     const difNodesAndConnections =
       Object.keys(this.designerModel.nodes).length -
@@ -1138,6 +1140,83 @@ export class PipelinesEditorComponent implements OnInit, OnDestroy {
         this.designerModel.nodes[key].data.tooltip = this.designerModel.nodes[key].data.data.description;
       });
     }
+  }
+
+  showDataFlow() {
+    this.dialog.open(DesignerPreviewComponent, {
+      width: '75%',
+      height: '90%',
+      data: this.generateDataFlowModel(this.generatePipeline()),
+    });
+  }
+
+  private generateDataFlowModel(pipeline) {
+    const model = DesignerComponent.newModel();
+    Object.keys(this.designerModel.nodes).forEach((k) => {
+      model.nodes[k.replace('designer-', 'dataflow-')] = this.designerModel.nodes[k];
+    });
+    model.nodeSeq = this.designerModel.nodeSeq;
+
+    // generate a step to nodeId lookup
+    this.stepLookup = {};
+    Object.keys(model.nodes).forEach((n) => {
+      const node = model.nodes[n];
+      const stepData = node.data.data;
+      this.stepLookup[stepData.id] = n;
+    });
+
+    // Add connections
+    let source;
+    let target;
+    pipeline.steps.forEach((step) => {
+      const allValues = [];
+
+      target = this.stepLookup[step.id];
+      // get a list of all string parameters to parse later
+      step.params.forEach((p) => {
+        if(step.executeIfEmpty) {
+          allValues.push(step.executeIfEmpty);
+        }
+
+        if (p.value && p.type !== 'result') {
+          if (typeof p.value === 'string') {
+            allValues.push(p.value);
+          } else if (typeof p.value === 'object') {
+            Object.keys(p.value).forEach((k) => {
+              if (typeof p.value[k] === 'string') {
+                allValues.push(p.value[k]);
+              }
+            });
+          }
+        }
+
+        // parse all the value strings
+        allValues.forEach((v) => {
+          v.split('||').forEach((x) => {
+            // TODO: check for external pipelineId (step id will be the 2nd element)
+            const targetName = x.split(/[.}]/)[0].replace(new RegExp('[@#{} ]', 'g'), '');
+            source = this.stepLookup[targetName];
+            if (source && target) {
+
+              console.log(`adding connection: ${source}(${step.id}) -> ${target}(${targetName})`);
+
+              model.connections[`${source}::${target}`] = {
+                sourceNodeId: source,
+                targetNodeId: target,
+                endpoints: [
+                  {
+                    sourceEndPoint: 'output',
+                    targetEndPoint: 'input',
+                  },
+                ],
+              };
+            }
+          });
+        });
+      });
+    });
+
+    return model;
   }
 
   private updateStep(step: PipelineStep) {

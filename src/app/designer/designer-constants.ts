@@ -23,7 +23,7 @@ export class DesignerConstants {
                                   connectorHoverStyle: PaintStyle = null): EndpointOptions {
     return {
       id: '',
-      maxConnections: 1,
+      maxConnections: -1,
       parameters: undefined,
       reattachConnections: false,
       scope: '',
